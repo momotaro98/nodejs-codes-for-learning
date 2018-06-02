@@ -1,5 +1,6 @@
 var express = require('express');
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./serviceAccount/testmixlnc-firebase-adminsdk-8gyrr-9af034a358.json");
@@ -10,6 +11,10 @@ admin.initializeApp({
 });
 
 var app = express();
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.listen(3000);
@@ -23,12 +28,14 @@ app.post('/', function(req, res) {
 app.post('/sessionLogin', (req, res) => {
   // Get the ID token passed and the CSRF token.
   const idToken = req.body.idToken.toString();
+  /*
   const csrfToken = req.body.csrfToken.toString();
   // Guard against CSRF attacks.
   if (csrfToken !== req.cookies.csrfToken) {
     res.status(401).send('UNAUTHORIZED REQUEST!');
     return;
   }
+  */
   // Set session expiration to 5 days.
   const expiresIn = 60 * 60 * 24 * 5 * 1000;
   // Create the session cookie. This will also verify the ID token in the process.
