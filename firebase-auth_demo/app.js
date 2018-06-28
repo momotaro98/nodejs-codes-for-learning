@@ -16,6 +16,11 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+ res.header("Access-Control-Allow-Origin", "*");
+ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+ next();
+});
 
 app.listen(3000);
 console.log('Server is online.');
@@ -28,6 +33,7 @@ app.post('/', function(req, res) {
 app.post('/sessionLogin', (req, res) => {
   // Get the ID token passed and the CSRF token.
   const idToken = req.body.idToken.toString();
+  console.log(idToken);
   /*
   const csrfToken = req.body.csrfToken.toString();
   // Guard against CSRF attacks.
@@ -48,6 +54,7 @@ app.post('/sessionLogin', (req, res) => {
     res.cookie('session', sessionCookie, options);
     res.end(JSON.stringify({status: 'success'}));
   }, error => {
+    console.log('Error aaaaaa');
     res.status(401).send('UNAUTHORIZED REQUEST!');
   });
 });
