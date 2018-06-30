@@ -17,9 +17,10 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use((req, res, next) => {
- res.header("Access-Control-Allow-Origin", "*");
- res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
- next();
+  res.header("Access-Control-Allow-Origin", "http://localhost:9000");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
 });
 
 app.listen(3000);
@@ -41,7 +42,7 @@ app.post('/sessionLogin', (req, res) => {
     res.status(401).send('UNAUTHORIZED REQUEST!');
     return;
   }
-  */
+ */
   // Set session expiration to 5 days.
   const expiresIn = 60 * 60 * 24 * 5 * 1000;
   // Create the session cookie. This will also verify the ID token in the process.
@@ -50,6 +51,8 @@ app.post('/sessionLogin', (req, res) => {
   // can be checked to ensure user was recently signed in before creating a session cookie.
   admin.auth().createSessionCookie(idToken, {expiresIn}).then((sessionCookie) => {
     // Set cookie policy for session cookie.
+    console.log('login!!!');
+    console.log(sessionCookie);
     const options = {maxAge: expiresIn, httpOnly: true, secure: true};
     res.cookie('session', sessionCookie, options);
     res.end(JSON.stringify({status: 'success'}));
@@ -60,15 +63,27 @@ app.post('/sessionLogin', (req, res) => {
 });
 
 // Whenever a user is accessing restricted content that requires authentication.
-app.get('/profile', (req, res) => {
+app.get('/pppp', (req, res) => {
   const sessionCookie = req.cookies.session || '';
   // Verify the session cookie. In this case an additional check is added to detect
   // if the user's Firebase session was revoked, user deleted/disabled, etc.
+  if (sessionCookie === '') {
+    console.log('No sessionCookie...');
+  } else {
+    console.log('There is sessionCookie!');
+    console.log(sessionCookie);
+  }
   admin.auth().verifySessionCookie(
     sessionCookie, true /** checkRevoked */).then((decodedClaims) => {
-    serveContentForUser('/profile', req, res, decodedClaims);
+    console.log('Verified!!!yeah!!!');
+    // Access to microservices
+    // serveContentForUser('/profile', req, res, decodedClaims);
+    // Return Response to client
+    res.end(JSON.stringify({profile: 'Your profile is here!!!'}));
   }).catch(error => {
     // Session cookie is unavailable or invalid. Force user to login.
-    res.redirect('/login');
+    console.log('Not Verified....');
+    // res.redirect('/login');
+    res.end(JSON.stringify({errorrr: 'You are not Verified...'}));
   });
 });
