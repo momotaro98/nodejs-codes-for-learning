@@ -20,6 +20,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', req.headers['origin']);
   res.header("Access-Control-Allow-Credentials", true);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET,POST,HEAD,OPTIONS");
   next();
 });
 
@@ -53,6 +54,7 @@ app.post('/sessionLogin', (req, res) => {
     // Set cookie policy for session cookie.
     console.log('login!!!');
     console.log(sessionCookie);
+    // const options = {domain: 'localhost', maxAge: expiresIn, httpOnly: true, secure: true}; // specify domain
     const options = {maxAge: expiresIn, httpOnly: true, secure: true};
     res.cookie('session', sessionCookie, options);
     res.end(JSON.stringify({status: 'success'}));
